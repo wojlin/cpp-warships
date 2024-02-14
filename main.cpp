@@ -1,15 +1,7 @@
-#include <iostream>
-#include <string.h>
-#include <regex>
 
-//#include "server.h"
-//#include "client.h"
+#include "main.h"
 
-#include "connection.h"
-
-using namespace std;
-
-bool isHostOrGuest()
+bool Core::isHostOrGuest()
 {
     bool declaration = false;
     string userInput;
@@ -19,8 +11,14 @@ bool isHostOrGuest()
         cout << "do you want to host game or join game? " << endl;
         cout << "type: host/join" << endl;
 
-        
-        getline(cin, userInput);
+        if(testMode)
+        {
+            userInput = args.mode;
+        }
+        else
+        {
+            getline(cin, userInput);
+        }
 
         if(userInput == "host" || userInput == "join")
         {
@@ -43,7 +41,7 @@ bool isHostOrGuest()
     }
 }
 
-string getServerAddress()
+string Core::getServerAddress()
 {
     string userInput;
     bool declaration = false;
@@ -51,7 +49,16 @@ string getServerAddress()
     while(!declaration)
     {
         cout << "type ip addr and port: <ip>:<port>" << endl;
-        getline(cin, userInput);
+
+        if(testMode)
+        {
+            userInput = args.address;
+        }
+        else
+        {
+            getline(cin, userInput);
+        }
+        
 
         size_t colonPos = userInput.find(':');
 
@@ -96,7 +103,7 @@ string getServerAddress()
     
 }
 
-int getPortNumber()
+int Core::getPortNumber()
 {
     string userInput;
     bool declaration = false;
@@ -104,7 +111,16 @@ int getPortNumber()
     while(!declaration)
     {
         cout << "choose port number from 1024-65535" << endl;
-        getline(cin, userInput);
+
+        if(testMode)
+        {
+            userInput = args.address;
+        }
+        else
+        {
+            getline(cin, userInput);
+        }
+        
     
         try
         {
@@ -131,7 +147,7 @@ int getPortNumber()
     return stoi(userInput);
 }
 
-string getLocalhostAddress()
+string Core::getLocalhostAddress()
 {
     char hostname[256];
     if (gethostname(hostname, sizeof(hostname)) == 0) 
@@ -153,15 +169,96 @@ string getLocalhostAddress()
     exit(1);
 }
 
-int main()
+
+
+void Core::printUsage() {
+    std::cerr << "Usage: ./program --mode <host/join> --address <string> --autoplace <bool>" << std::endl;
+}
+
+
+
+Core::arguments Core::checkArguments(int argc, char* argv[])
 {
-    bool isHost = isHostOrGuest();
-    Connection connection;
+
+    arguments args;
+
+    bool isModeSet = false;
+    bool isAddressSet = false;
+    bool isAutoplaceSet = false;
+
+
+    for (int i = 1; i < argc; ++i) {  // Start from 1 to skip the program name (argv[0])
+        std::string arg = argv[i];
+
+        if (arg == "--mode") {
+            if (i + 1 < argc) {
+                args.mode = argv[i + 1];
+                isModeSet = true;
+                i++;  // Skip the next argument since it has been processed
+            } else {
+                std::cerr << "Error: --mode requires an argument." << std::endl;
+                printUsage();
+                exit(1);
+            }
+        } else if (arg == "--address") {
+            if (i + 1 < argc) {
+                args.address = argv[i + 1];
+                isAddressSet = true;
+                i++;  // Skip the next argument since it has been processed
+            } else {
+                std::cerr << "Error: --address requires an argument." << std::endl;
+                printUsage();
+                exit(1);
+            }
+        } else if (arg == "--autoplace") {
+            if (i + 1 < argc) {
+                args.autoplace = std::string(argv[i + 1]) == "true";
+                isAutoplaceSet = true;
+                i++;  // Skip the next argument since it has been processed
+            } else {
+                std::cerr << "Error: --autoplace requires an argument (true/false)." << std::endl;
+                printUsage();
+                exit(1);
+            }
+        } else {
+            // Handle other arguments or show an error for unrecognized ones
+            std::cerr << "Error: Unrecognized argument: " << arg << std::endl;
+            printUsage();
+            exit(1);
+        }
+    }
+
+    if(!isModeSet || !isAddressSet || !isAutoplaceSet)
+    {
+        std::cerr << "Error: all arguments needs to be set!"<< std::endl;
+        printUsage();
+        exit(1);
+    }
+
+    return args;
+
+}
+
+Core::Core(int argc, char* argv[])
+{
+    
+    testMode = argc > 1;
+
+    if(testMode)
+    {
+        args = checkArguments(argc, argv);
+    }
+
+    isHost = isHostOrGuest();
+
+    
 
     if(isHost)
     {
         cout << "you are host" << endl;
-        int port = getPortNumber();
+        int port;
+        port = getPortNumber();
+         
         string address = getLocalhostAddress();
         std::cout << "game address: " << address << ":" << port << std::endl;
         connection.serverInit(port);
@@ -169,10 +266,24 @@ int main()
     {
         cout << "you are guest" << endl;
         
-        string serverAddress = getServerAddress();
-        connection.clientInit(serverAddress);
+        gameplay.drawPlacingBoard();
+        gameplay.managePlacing();
+
+        //string serverAddress = getServerAddress();
+        //connection.clientInit(serverAddress);
     }
 
-    
+}
 
+Core::~Core()
+{
+
+}
+
+int main(int argc, char* argv[])
+{
+    
+    Core core(argc, argv);
+
+    return 0;
 }

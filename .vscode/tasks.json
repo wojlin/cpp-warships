@@ -9,8 +9,9 @@
                 "-g",
                 "main.cpp",
                 "connection.cpp",
+                "gameplay.cpp",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/main"
             ],
             "options": {
                 "cwd": "/usr/bin"
@@ -29,8 +30,9 @@
                 "-g",
                 "main.cpp",
                 "connection.cpp",
+                "gameplay.cpp",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/main"
             ],
             "options": {
                 "cwd": "${fileDirname}"
