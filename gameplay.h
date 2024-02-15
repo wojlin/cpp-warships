@@ -2,9 +2,11 @@
 #define GAMEPLAY_H
 
 #include <iostream>
-#include <string.h>
 #include <regex>
 #include <vector>
+#include <locale>
+#include <string>
+#include <string.h>
 
 using namespace std;
 
@@ -29,10 +31,14 @@ public:
         int rotate;
     };
 
+    bool playerReady = false;
+    bool enemyReady = false;
+
     ships playerShips;
     ships shipsToPlace;
     std::vector<std::vector<int>> playerBoard = vector<vector<int>> (10, vector<int>(10, 0));
     std::vector<std::vector<int>> enemyBoard = vector<vector<int>> (10, vector<int>(10, 0));
+
 
     void drawBoard();
 
@@ -40,12 +46,14 @@ public:
 
     void managePlacing();
 
-    place getPlace();
+    void autoplaceShips();
 
     
     
 private:
-    bool isValidPlace(place desiredPlace);
+    void placeNewShip();
+    bool isValidPlaceForShip(place desiredPlace);
+    
 
 };
 

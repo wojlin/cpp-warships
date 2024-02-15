@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string.h>
 #include <regex>
+#include <thread>
+#include <chrono>
 
 #include "connection.h"
 #include "gameplay.h"

@@ -241,7 +241,7 @@ Core::arguments Core::checkArguments(int argc, char* argv[])
 
 Core::Core(int argc, char* argv[])
 {
-    
+
     testMode = argc > 1;
 
     if(testMode)
@@ -262,27 +262,60 @@ Core::Core(int argc, char* argv[])
         string address = getLocalhostAddress();
         std::cout << "game address: " << address << ":" << port << std::endl;
         connection.serverInit(port);
-    }else
+
+    }
+    else
     {
         cout << "you are guest" << endl;
-        
-        gameplay.drawPlacingBoard();
-        gameplay.managePlacing();
 
-        //string serverAddress = getServerAddress();
-        //connection.clientInit(serverAddress);
+        string serverAddress = getServerAddress();
+        connection.clientInit(serverAddress);   
     }
 
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+
+    if(args.autoplace)
+    {
+        gameplay.autoplaceShips();
+    }       
+    else
+    {
+        gameplay.managePlacing();
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    while(true)
+    {
+        connection.sendMessage("ships_placed");
+        string response = connection.awaitMessage();
+
+        if(response.compare(0, response.length(), "ships_placed", 13))
+        {
+            connection.sendMessage("start_game");
+            gameplay.enemyReady = true;
+            gameplay.drawPlacingBoard();
+            break;
+        }
+    }
+    
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    
+
+    
 }
 
 Core::~Core()
 {
-
+    connection.endConnection();
 }
 
 int main(int argc, char* argv[])
 {
-    
+    std::ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
     Core core(argc, argv);
 
     return 0;

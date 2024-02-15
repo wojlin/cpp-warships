@@ -1,7 +1,6 @@
 #include "gameplay.h"
-#include <locale>
-#include <string>
-#include <string.h>
+
+
 
 Gameplay::Gameplay()
 {
@@ -18,7 +17,7 @@ void Gameplay::drawBoard()
 
 }
 
-Gameplay::place Gameplay::getPlace()
+void Gameplay::placeNewShip()
 {
     bool goodPlace = false;
     place newPlace;
@@ -58,7 +57,8 @@ Gameplay::place Gameplay::getPlace()
                 cout << " <4>"; 
             }
             cout << endl;
-            cin >> shipType;
+            std::getline(std::cin, shipType);
+
 
             try
             {
@@ -192,7 +192,7 @@ Gameplay::place Gameplay::getPlace()
         newPlace.posY = yPos - 1;
         newPlace.rotate = shipRotation;
 
-        if(isValidPlace(newPlace))
+        if(isValidPlaceForShip(newPlace))
         {
             goodPlace = true;
         }
@@ -229,11 +229,9 @@ Gameplay::place Gameplay::getPlace()
         }
 
     }
-
-    return newPlace;
 }
 
-bool Gameplay::isValidPlace(Gameplay::place desiredPlace)
+bool Gameplay::isValidPlaceForShip(Gameplay::place desiredPlace)
 {
     // check for every ship part
     for(int i = 0; i < desiredPlace.shipSize; i++)
@@ -273,29 +271,73 @@ bool Gameplay::isValidPlace(Gameplay::place desiredPlace)
 
 void Gameplay::managePlacing()
 {
-    bool conditions = false;
-    while(!conditions)
+    drawPlacingBoard();
+
+    while(true)
     {
-        place newPlace = getPlace();
 
-        
+        if( shipsToPlace.size1 == 0 && 
+            shipsToPlace.size2 == 0 &&
+            shipsToPlace.size3 == 0 &&
+            shipsToPlace.size4 == 0)
+        {
+            break;
+        }
 
-        cout << "ship size: " << newPlace.shipSize << endl;
-        cout << "ship pos: " << newPlace.posX << " " << newPlace.posY << endl;
-        cout << "ship rotated:" << newPlace.rotate << endl;
+        placeNewShip();
+        drawPlacingBoard();     
 
-        drawPlacingBoard();
     }
 
+    playerReady = true;
+
+    drawPlacingBoard(); 
+
+    cout << "all ships are placed!" << endl;
+
     
-    
-    
+}
+
+void Gameplay::autoplaceShips()
+{
+    shipsToPlace.size1 = 0;
+    shipsToPlace.size2 = 0;
+    shipsToPlace.size3 = 0;
+    shipsToPlace.size4 = 0;
+
+    playerBoard[0][0] = 1;
+    playerBoard[0][9] = 1;
+    playerBoard[9][0] = 1;
+    playerBoard[9][9] = 1;
+
+    playerBoard[2][0] = 1;
+    playerBoard[2][1] = 1;
+    playerBoard[2][2] = 1;
+    playerBoard[2][3] = 1;
+
+    playerBoard[4][0] = 1;
+    playerBoard[4][1] = 1;
+    playerBoard[4][2] = 1;
+
+    playerBoard[6][0] = 1;
+    playerBoard[6][1] = 1;
+    playerBoard[6][2] = 1;
+
+    playerBoard[7][4] = 1;
+    playerBoard[7][5] = 1;
+
+    playerBoard[8][3] = 1;
+    playerBoard[8][4] = 1;
+
+    playerBoard[8][6] = 1;
+    playerBoard[8][7] = 1;
+
+    managePlacing();
 }
 
 void Gameplay::drawPlacingBoard()
 {
-    std::locale::global(std::locale("")); // Set the global locale to the user's default
-    std::wcout.imbue(std::locale());      // Set the locale for std::wcout
+    std::cout << "\033c";
 
     char endLetter = 'J';
 
@@ -382,11 +424,25 @@ void Gameplay::drawPlacingBoard()
     cout << "\033[1B";
     cout << "\033[15D";
     cout << "you   │ ";
-    std::cout << "\033[31m" << "not ready" << "\033[0m";
+    if(playerReady)
+    {
+        std::cout << "\033[32m" << "ready    " << "\033[0m";
+    }
+    else
+    {
+        std::cout << "\033[31m" << "not ready" << "\033[0m";
+    } 
     cout << "\033[1B";
     cout << "\033[18D";
     cout << "enemy  │ ";
-    std::cout << "\033[31m" << "not ready" << "\033[0m";
+    if(enemyReady)
+    {
+        std::cout << "\033[32m" << "ready    " << "\033[0m";
+    }
+    else
+    {
+        std::cout << "\033[31m" << "not ready" << "\033[0m";
+    } 
     cout << "\033[5B";
     cout << "\033[18D";
 
@@ -417,7 +473,9 @@ void Gameplay::drawPlacingBoard()
     cout << "\033[9D";
     cout << "■ " <<  "│ "<< shipsToPlace.size1 <<"x";
 
-    cout << "\033[10B";
+    cout << "\033[4B";
     cout << "\033[57D";
+
+    std::cout.flush();
 
 }

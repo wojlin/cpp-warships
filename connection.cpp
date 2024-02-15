@@ -8,9 +8,45 @@ Connection::~Connection() {
     // Destructor implementation
 }
 
+void Connection::endConnection()
+{
+    close(connectionSocket); 
+}
+
+void Connection::incomeCenter()
+{
+    while(true)
+    {
+        string message = awaitMessage();
+        if(message == "ships_placed")
+        {
+            gameplay->enemyReady = true;
+            gameplay->drawPlacingBoard();
+        }
+    }
+}
+
+string Connection::awaitMessage()
+{
+    char buffer[1024];
+    int bytesRead;
+    bytesRead = read(connectionSocket, buffer, sizeof(buffer));
+    string returnedMessage = string(buffer, bytesRead);
+    return returnedMessage;
+}
+
+void Connection::sendMessage(string message)
+{
+    char buffer[1024];
+
+    strcpy(buffer, message.c_str());
+    write(connectionSocket, buffer, std::strlen(buffer) + 1);
+}
+
 void Connection::clientInit(string address)
 {
 
+    isHost = false;
     size_t colonPos = address.find(':');
 
     int client;
@@ -18,7 +54,7 @@ void Connection::clientInit(string address)
     char* ip = const_cast<char*>(address.substr(0, colonPos).data());
 
 
-    cout << "connecting to " << ip << ":" << portNum << endl;
+    
 
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1) {
@@ -26,23 +62,27 @@ void Connection::clientInit(string address)
         exit(1);
     }
 
+    cout << "socket created!" << endl;
+
     // Set up server address structure
     sockaddr_in serverAddress;
     std::memset(&serverAddress, 0, sizeof(serverAddress));
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(portNum); // Port number
     inet_pton(AF_INET, ip, &serverAddress.sin_addr); // IP address
-
+    
+    cout << "connecting to " << ip << ":" << portNum << endl;
     // Connect to server
     if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
         std::cerr << "Error connecting to server\n";
         close(clientSocket);
         exit(1);
     }
-
+    connectionSocket = clientSocket;
     std::cout << "Connected to server\n";
 
     // Exchange messages with server
+    /*
     char buffer[1024];
     while (true) {
         // Send message to server
@@ -61,11 +101,13 @@ void Connection::clientInit(string address)
 
     // Close socket
     close(clientSocket);
+    */
 }
 
 
 void Connection::serverInit(int port)
 {
+    isHost = true;
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == -1) {
         std::cerr << "Error creating socket\n";
@@ -79,6 +121,7 @@ void Connection::serverInit(int port)
     serverAddress.sin_port = htons(port); // Port number
     serverAddress.sin_addr.s_addr = INADDR_ANY; // Accept connections on any interface
 
+    cout << "binding socket..." << endl;
     // Bind socket to address
     if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
         std::cerr << "Error binding socket to address\n";
@@ -86,19 +129,23 @@ void Connection::serverInit(int port)
         exit(1);
     }
 
-    // Listen for incoming connections
-    if (listen(serverSocket, 10) == -1) {
-        std::cerr << "Error listening for connections\n";
-        close(serverSocket);
+    
+
+    cout << "begin listening..." << endl;
+
+
+    if (listen(serverSocket, SOMAXCONN) == -1) {
+        perror("Error listening on socket");
         exit(1);
     }
+    
 
     std::cout << "Server listening on port " << port << "...\n";
 
     sockaddr_in clientAddress;
     socklen_t clientAddressLength = sizeof(clientAddress);
     int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
-
+    
     if (clientSocket == -1) {
         std::cerr << "Error accepting connection\n";
         close(serverSocket);
@@ -106,8 +153,10 @@ void Connection::serverInit(int port)
     }
 
     std::cout << "Connection accepted from " << inet_ntoa(clientAddress.sin_addr) << ":" << ntohs(clientAddress.sin_port) << "\n";
-
+    connectionSocket = clientSocket;
+    
     // Handle communication
+    /*
     char buffer[1024];
     int bytesRead;
     while (true) {
@@ -128,4 +177,5 @@ void Connection::serverInit(int port)
     // Close sockets
     close(clientSocket);
     close(serverSocket);
+    */
 }
