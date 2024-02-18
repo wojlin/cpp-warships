@@ -239,6 +239,90 @@ Core::arguments Core::checkArguments(int argc, char* argv[])
 
 }
 
+void Core::managePlayerTurn()
+{
+    bool moveMade = false;
+
+    while(!moveMade)
+    {
+        cout << "waiting for your move..." << endl;
+        std::cout.flush();
+        string place = gameplay.getCellForBombing();
+        string message = "bomb|" + place;
+        connection.sendMessage(message);
+        
+        vector<int> pos = gameplay.placeToCoords(place);
+        if(gameplay.enemyBoard[pos[1]][pos[0]] == 0)
+        {
+            moveMade = true;
+            gameplay.enemyBoard[pos[1]][pos[0]] = 3;
+        }
+        if(gameplay.enemyBoard[pos[1]][pos[0]] == 1)
+        {
+            gameplay.enemyBoard[pos[1]][pos[0]] = 2;
+        }
+
+        gameplay.drawBoard();
+
+    }
+}
+
+void Core::manageEnemyTurn()
+{
+    bool finished = false;
+    while(!finished)
+    {
+        cout << "waiting for enemy move..." << endl;
+        string prefixToCheck = "bomb|";
+        string receivedMessage = connection.awaitMessage();
+
+        if (receivedMessage.substr(0, prefixToCheck.length()) == prefixToCheck) 
+        {
+            vector<int> pos = gameplay.placeToCoords(receivedMessage.substr(5));
+            if(gameplay.playerBoard[pos[1]][pos[0]] == 1)
+            {
+                gameplay.playerBoard[pos[1]][pos[0]] = 2;
+                gameplay.drawBoard();
+                cout << "enemy hit your ship at " << receivedMessage.substr(5) << endl;
+                          
+            }
+            else
+            {
+                gameplay.playerBoard[pos[1]][pos[0]] = 3;
+                finished = true;
+                gameplay.drawBoard();
+            }
+            
+        }     
+    } 
+}
+
+void Core::managePreGamePhase()
+{
+    while(true)
+    {
+
+        string message = "ships_placed|";
+        message += gameplay.getBoard();
+        connection.sendMessage(message);
+        string shipsPrefix = "ships_placed|";
+        string startPrefix = "start_game|";
+        string response = connection.awaitMessage();
+
+        if(response.substr(0, shipsPrefix.length()) == shipsPrefix ||
+        response.substr(0, startPrefix.length()) == startPrefix)
+        {   
+            gameplay.decodeBoard(response);
+            string message = "start_game|";
+            message += gameplay.getBoard();
+            connection.sendMessage(message);
+            gameplay.enemyReady = true;
+            gameplay.drawPlacingBoard();
+            break;
+        }
+    }
+}
+
 Core::Core(int argc, char* argv[])
 {
 
@@ -286,28 +370,7 @@ Core::Core(int argc, char* argv[])
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    while(true)
-    {
-
-        string message = "ships_placed|";
-        message += gameplay.getBoard();
-        connection.sendMessage(message);
-        string shipsPrefix = "ships_placed|";
-        string startPrefix = "start_game|";
-        string response = connection.awaitMessage();
-
-        if(response.substr(0, shipsPrefix.length()) == shipsPrefix ||
-        response.substr(0, startPrefix.length()) == startPrefix)
-        {   
-            gameplay.decodeBoard(response);
-            string message = "start_game|";
-            message += gameplay.getBoard();
-            connection.sendMessage(message);
-            gameplay.enemyReady = true;
-            gameplay.drawPlacingBoard();
-            break;
-        }
-    }
+    managePreGamePhase();
     
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -315,31 +378,13 @@ Core::Core(int argc, char* argv[])
 
     if(connection.isHost)
     {
-        string place = gameplay.getCellForBombing();
-        connection.sendMessage("bomb|" + place);
+        managePlayerTurn();
     }
-
 
     while(!gameplay.gameEnded)
     {
-        cout << "waiting for enemy move..." << endl;
-
-        string prefixToCheck = "bomb";
-
-        string receivedMessage = connection.awaitMessage();
-
-        if (receivedMessage.substr(0, prefixToCheck.length()) != prefixToCheck) 
-        {
-            continue;
-        }
-
-        cout << receivedMessage << endl;
-
-        cout << "waiting for your move..." << endl;
-        std::cout.flush();
-        string place = gameplay.getCellForBombing();
-        string message = "bomb|" + place;
-        connection.sendMessage(message);
+        manageEnemyTurn();
+        managePlayerTurn();
     }
     
     cout << "end game!" << endl;

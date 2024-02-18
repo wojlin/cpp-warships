@@ -49,7 +49,7 @@ public:
 
     void autoplaceShips();
 
-    bool isValidPlaceForBomb();
+    bool isValidPlaceForBomb(int x, int y);
 
     string getCellForBombing();
 
@@ -57,11 +57,17 @@ public:
 
     void decodeBoard(string message);
 
+    vector<int> placeToCoords(string place);
+
     
     
 private:
     void placeNewShip();
     bool isValidPlaceForShip(place desiredPlace);
+
+    string shipChar = "■";
+    string shipHitChar = "x";
+    string missChar = "▨";
     
 
 };

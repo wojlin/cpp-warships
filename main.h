@@ -15,11 +15,7 @@ using namespace std;
 class Core {
 public:
     Core(int argc, char* argv[]);  // Constructor
-    ~Core(); // Destructor
-
-    void serverInit(int port); 
-
-    void clientInit(string serverAddress); 
+    ~Core(); // Destructor 
 
 
 
@@ -43,7 +39,9 @@ private:
     string getLocalhostAddress();
     void printUsage();
     arguments checkArguments(int argc, char* argv[]);
-
+    void managePlayerTurn();
+    void manageEnemyTurn();
+    void managePreGamePhase();
 
 };
 

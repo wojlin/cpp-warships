@@ -12,6 +12,32 @@ Gameplay::~Gameplay()
 
 }
 
+vector<int> Gameplay::placeToCoords(string place)
+{
+    if (place.back() == '\0') 
+    {
+        place.pop_back();
+    } 
+
+    int xPos = static_cast<int>(place.at(0) - 'A') + 1;
+    int yPos;
+
+    if(place.size() == 2)
+    {
+        yPos = place.at(1) - '0';
+    }
+    else
+    {
+        yPos = 10;
+    }
+
+    
+    vector<int> pos;
+    pos.push_back(xPos - 1);
+    pos.push_back(yPos - 1);
+    return pos;
+}
+
 void Gameplay::decodeBoard(string message)
 {
 
@@ -92,8 +118,16 @@ string Gameplay::getBoard()
     return buffer;
 }
 
-bool isValidPlaceForBomb()
+bool Gameplay::isValidPlaceForBomb(int x, int y)
 {
+    if(enemyBoard[y][x] == 2)
+    {
+        return false;
+    }
+    if(enemyBoard[y][x] == 3)
+    {
+        return false;
+    }
     return true;
 }
 
@@ -121,6 +155,25 @@ string Gameplay::getCellForBombing()
         if(!check)
         {
             cerr << "positon format needs to be <letter><number> from A to J and 1 to 10!" << endl;
+            continue;
+        }
+
+
+        int xPos = static_cast<int>(position.at(0) - 'A') + 1;
+        int yPos;
+
+        if(position.size() == 2)
+        {
+            yPos = position.at(1) - '0';
+        }
+        else
+        {
+            yPos = 10;
+        }
+
+        if(!isValidPlaceForBomb(xPos, yPos))
+        {
+            cerr << "invalid position!" << endl;
             continue;
         }
 
@@ -201,14 +254,31 @@ void Gameplay::drawBoard()
 
                 if(board == 0)
                 {
-                   if(playerBoard[yPos][xPos] == 1)
+
+                    if(playerBoard[yPos][xPos] == 1)
                     {
-                        content = " x ";
+                        content = " " + shipChar + " ";
                     }
+                    if(playerBoard[yPos][xPos] == 2)
+                    {
+                        content = " " + shipHitChar + " ";
+                    }
+                    if(playerBoard[yPos][xPos] == 3)
+                    {
+                        content = " " + missChar + " ";
+                    }
+
                 }
                 else
                 {
-                    // to be continued...
+                    if(enemyBoard[yPos][xPos] == 2)
+                    {
+                        content = " " + shipHitChar + " ";
+                    }
+                    if(enemyBoard[yPos][xPos] == 3)
+                    {
+                        content = " " + missChar + " ";
+                    }
                 }
                 
                 cout << "║" << content;
@@ -630,7 +700,15 @@ void Gameplay::drawPlacingBoard()
             string content = "   ";
             if(playerBoard[yPos][xPos] == 1)
             {
-                content = " x ";
+                content = " " + shipChar + " ";
+            }
+            if(playerBoard[yPos][xPos] == 2)
+            {
+                content = " " + shipHitChar + " ";
+            }
+            if(playerBoard[yPos][xPos] == 3)
+            {
+                content = " " + missChar + " ";
             }
             cout << "║" << content;
         }
