@@ -67,7 +67,7 @@ private:
 
     string shipChar = "■";
     string shipHitChar = "x";
-    string missChar = "▨";
+    string missChar = "◯";
     
 
 };

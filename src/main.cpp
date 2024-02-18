@@ -1,5 +1,5 @@
 
-#include "main.h"
+#include "../include/main.h"
 
 bool Core::isHostOrGuest()
 {
