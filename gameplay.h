@@ -24,7 +24,7 @@ public:
     };
 
     struct place
-    {
+    { 
         int shipSize;
         int posX;
         int posY;
@@ -33,6 +33,7 @@ public:
 
     bool playerReady = false;
     bool enemyReady = false;
+    bool gameEnded = false;
 
     ships playerShips;
     ships shipsToPlace;
@@ -47,6 +48,14 @@ public:
     void managePlacing();
 
     void autoplaceShips();
+
+    bool isValidPlaceForBomb();
+
+    string getCellForBombing();
+
+    string getBoard();
+
+    void decodeBoard(string message);
 
     
     

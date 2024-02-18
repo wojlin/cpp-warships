@@ -12,9 +12,261 @@ Gameplay::~Gameplay()
 
 }
 
-void Gameplay::drawBoard()
+void Gameplay::decodeBoard(string message)
 {
 
+    cerr << message << endl;
+
+    if (message.find('|') == std::string::npos) 
+    {
+        cerr << "message does not contain '|' char!" << endl;
+        exit(1);
+    }
+
+    if (message.find('.') == std::string::npos) 
+    {
+        cerr << "message does not contain '.' char!" << endl;
+        exit(1);
+    }
+
+    size_t delimiterPos = message.find('|');
+    if (delimiterPos != std::string::npos)
+    {
+        string sBoard = message.substr(delimiterPos + 1);
+        std::istringstream ss(sBoard);
+        std::string binaryDigit;
+        std::vector<int> decodedVector;
+
+
+        while (std::getline(ss, binaryDigit, '.')) 
+        {
+            cout << decodedVector.size();
+            try 
+            {
+                cerr << binaryDigit << endl;
+                int decodedValue = std::stoi(binaryDigit, nullptr, 2);
+                decodedVector.push_back(decodedValue);
+            }
+            catch (const std::invalid_argument& e) 
+            {
+
+            }
+        }
+
+        if(decodedVector.size() != 100)
+        {
+            cerr << "decoded vector have invalid length of " << decodedVector.size() << endl;
+            exit(1);
+        }
+
+        for( int y = 0; y < 10; y++)
+        {
+            for( int x = 0; x < 10; x++)
+            {
+                enemyBoard[y][x] = decodedVector[y*10+x];
+            }
+        }
+
+
+    }
+    else
+    {
+        cerr << "invalid board message!" << endl;
+        exit(1);
+    }
+    
+}   
+
+string Gameplay::getBoard()
+{
+    string buffer = "";
+
+    for(int y = 0; y < 10; y++)
+    {
+        for(int x = 0; x < 10; x++)
+        {
+            buffer += to_string(playerBoard[y][x]);
+            buffer += ".";
+        }
+    }
+    return buffer;
+}
+
+bool isValidPlaceForBomb()
+{
+    return true;
+}
+
+string Gameplay::getCellForBombing()
+{
+    string position;
+
+    while(true)
+    {
+        cout << "pick a spot to bomb. example: <A4>,<G7> etc" << endl;
+        cin >> position;
+
+        if(position.size() != 2 && position.size() != 3)
+        {
+            cerr << "incorrect input!" << endl;
+            cerr << "positon format needs to be <letter><number> from A to J and 1 to 10!" << endl;
+            continue;
+        }
+
+
+
+        std::regex pattern("^[A-J]([1-9]|10)$");
+        bool check = std::regex_match(position, pattern);
+        
+        if(!check)
+        {
+            cerr << "positon format needs to be <letter><number> from A to J and 1 to 10!" << endl;
+            continue;
+        }
+
+        break;
+    }
+
+    
+
+    return position;
+}
+
+void Gameplay::drawBoard()
+{
+    std::cout << "\033c";
+    char endLetter = 'J';
+
+    for(int board = 0; board <= 1; board++)
+    {
+
+        if(board == 1)
+        {
+            std::cout << "\033[H";
+            std::cout << "\033[50C";
+        }
+        
+
+        cout << "      ";
+        for (char currentLetter = 'A'; currentLetter <= endLetter; ++currentLetter) 
+        {
+            cout << currentLetter << "   ";
+        }
+
+
+        cout << "\033[1B";
+        cout << "\033[46D";
+
+        
+        cout << "    ╔";
+
+        for (int z = 0; z < 9; ++z) 
+        {
+            cout << "═══╦";
+        }
+        cout << "═══╗";
+        
+
+        if(board == 0)
+        {
+            cout << "\033[1B";
+            cout << "\033[46D";
+        }
+        else
+        {
+            cout << "\033[1B";
+            cout << "\033[45D";
+        }
+        
+
+        for (int i = 1; i < 11; ++i) {
+            
+    
+            
+
+            cout << " "<< i << " ";
+            if(i < 10)
+            {
+                cout << " ";
+            }
+            
+
+            for (int z = 0; z < 11; ++z) 
+            {
+                int yPos = i - 1;
+                int xPos = z;
+                string content = "   ";
+
+
+
+                if(board == 0)
+                {
+                   if(playerBoard[yPos][xPos] == 1)
+                    {
+                        content = " x ";
+                    }
+                }
+                else
+                {
+                    // to be continued...
+                }
+                
+                cout << "║" << content;
+            }
+
+
+            if(board == 0)
+            {
+                cout << "\033[1B";
+                cout << "\033[50D";
+            }
+            else
+            {
+                cout << "\033[1B";
+                cout << "\033[48D";
+            }
+            
+
+            if(i < 10)
+            {
+                cout << "    ╠";
+                for (int x = 0; x < 9; ++x) 
+                {
+                cout << "═══╬";
+                }
+                cout << "═══╣";
+
+                cout << "\033[1B";
+                cout << "\033[45D";
+            }
+            else
+            {
+                cout << "    ╚";
+                for (int x = 0; x < 9; ++x) 
+                {
+                cout << "═══╩";
+                }
+                cout << "═══╝";
+
+                cout << "\033[1B";
+                cout << "\033[45D";
+            }
+
+            
+
+        }
+
+        
+
+    }
+
+    std::cout << "\r";
+
+
+    cout << "                 " << "PLAYER BOARD";
+    cout << "                                        " << "ENEMY BOARD" << endl;
+
+    std::cout.flush();
 }
 
 void Gameplay::placeNewShip()

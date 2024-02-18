@@ -13,18 +13,6 @@ void Connection::endConnection()
     close(connectionSocket); 
 }
 
-void Connection::incomeCenter()
-{
-    while(true)
-    {
-        string message = awaitMessage();
-        if(message == "ships_placed")
-        {
-            gameplay->enemyReady = true;
-            gameplay->drawPlacingBoard();
-        }
-    }
-}
 
 string Connection::awaitMessage()
 {

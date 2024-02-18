@@ -288,12 +288,21 @@ Core::Core(int argc, char* argv[])
 
     while(true)
     {
-        connection.sendMessage("ships_placed");
+
+        string message = "ships_placed|";
+        message += gameplay.getBoard();
+        connection.sendMessage(message);
+        string shipsPrefix = "ships_placed|";
+        string startPrefix = "start_game|";
         string response = connection.awaitMessage();
 
-        if(response.compare(0, response.length(), "ships_placed", 13))
-        {
-            connection.sendMessage("start_game");
+        if(response.substr(0, shipsPrefix.length()) == shipsPrefix ||
+        response.substr(0, startPrefix.length()) == startPrefix)
+        {   
+            gameplay.decodeBoard(response);
+            string message = "start_game|";
+            message += gameplay.getBoard();
+            connection.sendMessage(message);
             gameplay.enemyReady = true;
             gameplay.drawPlacingBoard();
             break;
@@ -301,8 +310,39 @@ Core::Core(int argc, char* argv[])
     }
     
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    
 
+    gameplay.drawBoard();
+
+    if(connection.isHost)
+    {
+        string place = gameplay.getCellForBombing();
+        connection.sendMessage("bomb|" + place);
+    }
+
+
+    while(!gameplay.gameEnded)
+    {
+        cout << "waiting for enemy move..." << endl;
+
+        string prefixToCheck = "bomb";
+
+        string receivedMessage = connection.awaitMessage();
+
+        if (receivedMessage.substr(0, prefixToCheck.length()) != prefixToCheck) 
+        {
+            continue;
+        }
+
+        cout << receivedMessage << endl;
+
+        cout << "waiting for your move..." << endl;
+        std::cout.flush();
+        string place = gameplay.getCellForBombing();
+        string message = "bomb|" + place;
+        connection.sendMessage(message);
+    }
+    
+    cout << "end game!" << endl;
     
 }
 

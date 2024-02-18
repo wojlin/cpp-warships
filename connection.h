@@ -13,7 +13,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "gameplay.h"
 
 using namespace std;
 
@@ -28,7 +27,6 @@ public:
 
     void clientInit(string serverAddress); 
 
-    void incomeCenter();
 
     void endConnection();
 
@@ -37,10 +35,10 @@ public:
     void sendMessage(string message);
 
 
-    Gameplay* gameplay;
+    bool isHost;
 
 private:
-    bool isHost;
+    
     int connectionSocket;
     
 
