@@ -35,7 +35,6 @@ public:
     bool enemyReady = false;
     bool gameEnded = false;
 
-    ships playerShips;
     ships shipsToPlace;
     std::vector<std::vector<int>> playerBoard = vector<vector<int>> (10, vector<int>(10, 0));
     std::vector<std::vector<int>> enemyBoard = vector<vector<int>> (10, vector<int>(10, 0));
@@ -58,6 +57,8 @@ public:
     void decodeBoard(string message);
 
     vector<int> placeToCoords(string place);
+
+    bool checkGameEndConditions();
 
     
     

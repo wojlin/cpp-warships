@@ -384,11 +384,19 @@ Core::Core(int argc, char* argv[])
     while(!gameplay.gameEnded)
     {
         manageEnemyTurn();
+        if(gameplay.checkGameEndConditions())
+        {
+            break;
+        }
         managePlayerTurn();
+        if(gameplay.checkGameEndConditions())
+        {
+            break;
+        }
     }
     
-    cout << "end game!" << endl;
-    
+    cout << "game will exit in 5 seconds..." << endl;
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
 Core::~Core()

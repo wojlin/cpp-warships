@@ -12,6 +12,47 @@ Gameplay::~Gameplay()
 
 }
 
+bool Gameplay::checkGameEndConditions()
+{
+    int playerShipsCount = 0;
+    int enemyShipsCount = 0;
+
+    for(int y = 0; y < 10; y++)
+    {
+        for(int x = 0; x < 10; x++)
+        {
+            if(playerBoard[y][x] == 1)
+            {
+                playerShipsCount += 1;
+            }
+
+            if(enemyBoard[y][x] == 1)
+            {
+                enemyShipsCount += 1;
+            }
+        }
+    }
+
+    if(playerShipsCount == 0)
+    {
+        cout << "game end!" << endl;
+        cout << "you lose!" << endl;
+        gameEnded = true;
+        return true;
+    }
+
+    if(enemyShipsCount == 0)
+    {
+        cout << "game end!" << endl;
+        cout << "you won!" << endl;
+        gameEnded = true;
+        return true;
+    }
+
+    return false;
+
+}
+
 vector<int> Gameplay::placeToCoords(string place)
 {
     if (place.back() == '\0') 
