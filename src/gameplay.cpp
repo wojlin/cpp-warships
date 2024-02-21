@@ -12,6 +12,28 @@ Gameplay::~Gameplay()
 
 }
 
+void Gameplay::splashScreen()
+{
+    cout << "                 WARSHIPS " << endl;
+    cout << endl;
+    cout << "                    ~." << endl;
+    cout << "             Ya...___|__..aab     .   ." << endl;
+    cout << "              Y88a  Y88o  Y88a   (     )" << endl;
+    cout << "               Y88b  Y88b  Y88b   `.oo'" << endl;
+    cout << "               :888  :888  :888  ( (`-'" << endl;
+    cout << "     .---.     d88P  d88P  d88P   `.`." << endl;
+    cout << "    / .-._)   d8P''''|''''-Y8P      `.`." << endl;
+    cout << "    ( (`._) .-.  .-. |.-.  .-.  .-.   ) )" << endl;
+    cout << "     \\ `---( O )( O )( O )( O )( O )-' /" << endl;
+    cout << "      `.    `-'  `-'  `-'  `-'  `-'  .' CJ" << endl;
+    cout << "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<< endl;
+    cout << endl;
+    cout << "Press 'enter' to start" << endl;
+    string input;
+    cin >> input;
+
+}
+
 bool Gameplay::checkGameEndConditions()
 {
     int playerShipsCount = 0;

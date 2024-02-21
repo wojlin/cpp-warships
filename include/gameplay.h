@@ -60,6 +60,7 @@ public:
 
     bool checkGameEndConditions();
 
+    void splashScreen();
     
     
 private:

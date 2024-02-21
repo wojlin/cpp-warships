@@ -326,6 +326,8 @@ void Core::managePreGamePhase()
 Core::Core(int argc, char* argv[])
 {
 
+    gameplay.splashScreen();
+
     testMode = argc > 1;
 
     if(testMode)
