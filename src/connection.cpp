@@ -50,7 +50,7 @@ void Connection::clientInit(string address)
         exit(1);
     }
 
-    cout << "socket created!" << endl;
+    //cout << "socket created!" << endl;
 
     // Set up server address structure
     sockaddr_in serverAddress;
@@ -59,7 +59,7 @@ void Connection::clientInit(string address)
     serverAddress.sin_port = htons(portNum); // Port number
     inet_pton(AF_INET, ip, &serverAddress.sin_addr); // IP address
     
-    cout << "connecting to " << ip << ":" << portNum << endl;
+    //cout << "connecting to " << ip << ":" << portNum << endl;
     // Connect to server
     if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
         std::cerr << "Error connecting to server\n";
@@ -67,7 +67,7 @@ void Connection::clientInit(string address)
         exit(1);
     }
     connectionSocket = clientSocket;
-    std::cout << "Connected to server\n";
+    //std::cout << "Connected to server\n";
 
     // Exchange messages with server
     /*
@@ -109,7 +109,7 @@ void Connection::serverInit(int port)
     serverAddress.sin_port = htons(port); // Port number
     serverAddress.sin_addr.s_addr = INADDR_ANY; // Accept connections on any interface
 
-    cout << "binding socket..." << endl;
+    //cout << "binding socket..." << endl;
     // Bind socket to address
     if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
         std::cerr << "Error binding socket to address\n";
@@ -119,7 +119,9 @@ void Connection::serverInit(int port)
 
     
 
-    cout << "begin listening..." << endl;
+    //cout << "begin listening..." << endl;
+
+    cout << "waiting for other player to join your game..." << endl << std::flush;
 
 
     if (listen(serverSocket, SOMAXCONN) == -1) {
@@ -128,7 +130,7 @@ void Connection::serverInit(int port)
     }
     
 
-    std::cout << "Server listening on port " << port << "...\n";
+    //std::cout << "Server listening on port " << port << "...\n";
 
     sockaddr_in clientAddress;
     socklen_t clientAddressLength = sizeof(clientAddress);
@@ -140,7 +142,7 @@ void Connection::serverInit(int port)
         exit(1);
     }
 
-    std::cout << "Connection accepted from " << inet_ntoa(clientAddress.sin_addr) << ":" << ntohs(clientAddress.sin_port) << "\n";
+    //std::cout << "Connection accepted from " << inet_ntoa(clientAddress.sin_addr) << ":" << ntohs(clientAddress.sin_port) << "\n";
     connectionSocket = clientSocket;
     
     // Handle communication
@@ -166,4 +168,7 @@ void Connection::serverInit(int port)
     close(clientSocket);
     close(serverSocket);
     */
+
+   
+   
 }

@@ -14,23 +14,25 @@ Gameplay::~Gameplay()
 
 void Gameplay::splashScreen()
 {
-    cout << "                 WARSHIPS " << endl;
+    std::cout << "\033c";
+    cout << "                            WARSHIPS " << endl;
     cout << endl;
-    cout << "                    ~." << endl;
-    cout << "             Ya...___|__..aab     .   ." << endl;
-    cout << "              Y88a  Y88o  Y88a   (     )" << endl;
-    cout << "               Y88b  Y88b  Y88b   `.oo'" << endl;
-    cout << "               :888  :888  :888  ( (`-'" << endl;
-    cout << "     .---.     d88P  d88P  d88P   `.`." << endl;
-    cout << "    / .-._)   d8P''''|''''-Y8P      `.`." << endl;
-    cout << "    ( (`._) .-.  .-. |.-.  .-.  .-.   ) )" << endl;
-    cout << "     \\ `---( O )( O )( O )( O )( O )-' /" << endl;
-    cout << "      `.    `-'  `-'  `-'  `-'  `-'  .' CJ" << endl;
-    cout << "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<< endl;
+    cout << "                              ~." << endl;
+    cout << "                       Ya...___|__..aab     .   ." << endl;
+    cout << "                        Y88a  Y88o  Y88a   (     )" << endl;
+    cout << "                         Y88b  Y88b  Y88b   `.oo'" << endl;
+    cout << "                         :888  :888  :888  ( (`-'" << endl;
+    cout << "               .---.     d88P  d88P  d88P   `.`." << endl;
+    cout << "              / .-._)   d8P''''|''''-Y8P      `.`." << endl;
+    cout << "              ( (`._) .-.  .-. |.-.  .-.  .-.   ) )" << endl;
+    cout << "               \\ `---( O )( O )( O )( O )( O )-' /" << endl;
+    cout << "                `.    `-'  `-'  `-'  `-'  `-'  .' CJ" << endl;
+    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<< endl;
     cout << endl;
-    cout << "Press 'enter' to start" << endl;
+    cout << "Press 'enter' to start" << std::flush;;
     string input;
-    cin >> input;
+    std::getline(std::cin, input);
+
 
 }
 
@@ -94,10 +96,13 @@ vector<int> Gameplay::placeToCoords(string place)
         yPos = 10;
     }
 
+    cout << yPos << endl << std::flush;
+
     
     vector<int> pos;
     pos.push_back(xPos - 1);
     pos.push_back(yPos - 1);
+    cout << pos[0] << " " << pos[1] << endl;
     return pos;
 }
 
@@ -183,11 +188,11 @@ string Gameplay::getBoard()
 
 bool Gameplay::isValidPlaceForBomb(int x, int y)
 {
-    if(enemyBoard[y][x] == 2)
+    if(enemyBoard[y - 1][x - 1] == 2)
     {
         return false;
     }
-    if(enemyBoard[y][x] == 3)
+    if(enemyBoard[y - 1][x - 1] == 3)
     {
         return false;
     }
@@ -202,7 +207,7 @@ string Gameplay::getCellForBombing()
     {
         cout << "pick a spot to bomb. example: <A4>,<G7> etc" << endl;
         cin >> position;
-
+        
         if(position.size() != 2 && position.size() != 3)
         {
             cerr << "incorrect input!" << endl;
@@ -224,7 +229,7 @@ string Gameplay::getCellForBombing()
 
         int xPos = static_cast<int>(position.at(0) - 'A') + 1;
         int yPos;
-
+        
         if(position.size() == 2)
         {
             yPos = position.at(1) - '0';

@@ -8,8 +8,8 @@ bool Core::isHostOrGuest()
 
     while(!declaration)
     {
-        cout << "do you want to host game or join game? " << endl;
-        cout << "type: host/join" << endl;
+        cout << "do you want to host game or join game? type: host/join" << endl;
+        cout << "player type: " << std::flush;
 
         if(testMode)
         {
@@ -49,7 +49,7 @@ string Core::getServerAddress()
     while(!declaration)
     {
         cout << "type ip addr and port: <ip>:<port>" << endl;
-
+        cout << "address: "<< std::flush;;
         if(testMode)
         {
             userInput = args.address;
@@ -111,7 +111,7 @@ int Core::getPortNumber()
     while(!declaration)
     {
         cout << "choose port number from 1024-65535" << endl;
-
+        cout << "port: "<< std::flush;;
         if(testMode)
         {
             userInput = args.address;
@@ -326,13 +326,17 @@ void Core::managePreGamePhase()
 Core::Core(int argc, char* argv[])
 {
 
-    gameplay.splashScreen();
+    
 
     testMode = argc > 1;
 
     if(testMode)
     {
         args = checkArguments(argc, argv);
+    }
+    else
+    {
+        gameplay.splashScreen();
     }
 
     isHost = isHostOrGuest();
@@ -341,7 +345,6 @@ Core::Core(int argc, char* argv[])
 
     if(isHost)
     {
-        cout << "you are host" << endl;
         int port;
         port = getPortNumber();
          
@@ -352,8 +355,6 @@ Core::Core(int argc, char* argv[])
     }
     else
     {
-        cout << "you are guest" << endl;
-
         string serverAddress = getServerAddress();
         connection.clientInit(serverAddress);   
     }
