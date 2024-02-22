@@ -14,6 +14,11 @@ This version of CPP Terminal Warships not only serves as a C++ programming exerc
 
 ## installation
 
+```bash
+git clone git@github.com:wojlin/cpp-warships.git
+cd cpp-warships
+```
+
 ### 1. via cmake
 
 ```bash
