@@ -14,6 +14,7 @@ using namespace std;
 
 class Core {
 public:
+    Core();
     Core(int argc, char* argv[]);  // Constructor
     ~Core(); // Destructor 
 

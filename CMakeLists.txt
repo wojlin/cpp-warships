@@ -1,15 +1,33 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(warships)
+set(This warships)
+
+project(${This}
+VERSION 1.1.1
+DESCRIPTION "warships game in cpp"
+LANGUAGES CXX)
+
+# enable tests
+enable_testing()
+
+# add google test
+add_subdirectory(external)
+
+
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 11)
 
-# Source files
-file(GLOB SOURCES "src/*.cpp")
 
-# Include directories
-include_directories(include)
+file(GLOB Sources "src/*.cpp")
+file(GLOB Headers "include/*.h")
+add_library(warhsips_object STATIC ${Sources} ${Headers})
 
 # Build executable
-add_executable(warships ${SOURCES})
+add_executable(${This} ${Sources})
+
+
+
+# add tests directory
+add_subdirectory(tests)
+

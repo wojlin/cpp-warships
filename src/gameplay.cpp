@@ -95,14 +95,11 @@ vector<int> Gameplay::placeToCoords(string place)
     {
         yPos = 10;
     }
-
-    cout << yPos << endl << std::flush;
-
     
     vector<int> pos;
     pos.push_back(xPos - 1);
     pos.push_back(yPos - 1);
-    cout << pos[0] << " " << pos[1] << endl;
+    //cout << pos[0] << " " << pos[1] << endl;
     return pos;
 }
 

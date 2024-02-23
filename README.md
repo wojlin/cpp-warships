@@ -17,6 +17,7 @@ This version of CPP Terminal Warships not only serves as a C++ programming exerc
 ```bash
 git clone git@github.com:wojlin/cpp-warships.git
 cd cpp-warships
+git submodule add -f https://github.com/google/googletest.git external/googletest
 ```
 
 ### 1. via cmake

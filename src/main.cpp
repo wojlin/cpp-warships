@@ -1,6 +1,7 @@
 
 #include "../include/main.h"
 
+
 bool Core::isHostOrGuest()
 {
     bool declaration = false;
@@ -220,7 +221,12 @@ Core::arguments Core::checkArguments(int argc, char* argv[])
                 printUsage();
                 exit(1);
             }
-        } else {
+        }
+        else if(arg == "--gtest_list_tests")
+        {
+            exit(0);
+        } 
+        else {
             // Handle other arguments or show an error for unrecognized ones
             std::cerr << "Error: Unrecognized argument: " << arg << std::endl;
             printUsage();
@@ -321,6 +327,11 @@ void Core::managePreGamePhase()
             break;
         }
     }
+}
+
+Core::Core()
+{
+    cout << "testing mode" << endl;
 }
 
 Core::Core(int argc, char* argv[])
