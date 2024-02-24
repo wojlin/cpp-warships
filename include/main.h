@@ -7,43 +7,16 @@
 #include <thread>
 #include <chrono>
 
-#include "connection.h"
-#include "gameplay.h"
+#include "core.h"
 
 using namespace std;
 
-class Core {
-public:
-    Core();
-    Core(int argc, char* argv[]);  // Constructor
-    ~Core(); // Destructor 
+void run(int argc, char* argv[])
+{
+    std::ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-
-
-    struct arguments
-    {
-        string mode;
-        string address;
-        bool autoplace;
-    };
-
-    Core::arguments args;
-    bool testMode = false;
-    bool isHost = false;
-    Connection connection;
-    Gameplay gameplay;
-
-private:
-    bool isHostOrGuest();
-    string getServerAddress();
-    int getPortNumber();
-    string getLocalhostAddress();
-    void printUsage();
-    arguments checkArguments(int argc, char* argv[]);
-    void managePlayerTurn();
-    void manageEnemyTurn();
-    void managePreGamePhase();
-
-};
+    Core core(argc, argv);
+}
 
 #endif
