@@ -3,3 +3,4 @@ build/
 build/*
 external/googletest/*
 external/googletest/
+external/googletest
