@@ -264,6 +264,10 @@ void Core::managePlayerTurn()
         if(gameplay.enemyBoard[pos[1]][pos[0]] == 1)
         {
             gameplay.enemyBoard[pos[1]][pos[0]] = 2;
+            if(gameplay.checkGameEndConditions())
+            {
+                moveMade = true;
+            }
         }
 
         gameplay.drawBoard();
@@ -288,6 +292,10 @@ void Core::manageEnemyTurn()
                 gameplay.playerBoard[pos[1]][pos[0]] = 2;
                 gameplay.drawBoard();
                 cout << "enemy hit your ship at " << receivedMessage.substr(5) << endl;
+                if(gameplay.checkGameEndConditions())
+                {
+                    finished = true;
+                }
                           
             }
             else
